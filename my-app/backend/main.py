@@ -108,6 +108,20 @@ def send_api_request(file_path):
 
     return response.text
 
+@app.route('/api/receive-result', methods=['POST'])
+def receive_result():
+    data = request.get_json()
+    result = data.get('result')
+    
+    if not result:
+        return jsonify({'message': 'No result provided'}), 400
+
+    # Process the result as needed
+    print(f'Result received: {result}')
+    
+    return jsonify({'message': 'Result received successfully!'}), 200
+
+
 if __name__ == '__main__':
     clear_folders()
     app.run(port=8000, debug=True)
