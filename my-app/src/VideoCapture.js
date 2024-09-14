@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Button, Typography, Box, Container, IconButton, CircularProgress } from '@mui/material';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import StopIcon from '@mui/icons-material/Stop';
 
 const VideoCapture = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -8,7 +11,8 @@ const VideoCapture = () => {
   const videoRef = useRef(null);
   const recordedChunksRef = useRef([]);
   const recordingIntervalRef = useRef(null);
-  var segments = 0;
+  const [hasPermission, setHasPermission] = useState(null);
+  let segments = 0; // Use let instead of var for better scope management
 
   useEffect(() => {
     let stream;
@@ -17,8 +21,10 @@ const VideoCapture = () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         startNewRecorder(stream); // Initialize with a new recorder
+        setHasPermission(true);
       } catch (error) {
         console.error('Error accessing media devices.', error);
+        setHasPermission(false);
       }
     };
 
@@ -71,6 +77,14 @@ const VideoCapture = () => {
     }
   };
 
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
   const startRecording = () => {
     segments = 0;
     if (mediaRecorder) {
@@ -81,7 +95,6 @@ const VideoCapture = () => {
       recordingIntervalRef.current = setInterval(() => {
         if (mediaRecorder) {
           mediaRecorder.stop(); // Stop current recording
-          //startNewRecorder(videoRef.current.srcObject); // Start new recording
           mediaRecorder.start(); // Start recording
         }
       }, 2000); // 2000ms = 2 seconds
@@ -126,13 +139,39 @@ const VideoCapture = () => {
   };
 
   return (
-    <div>
-      <video ref={videoRef} width="640" height="480" autoPlay muted></video>
-      <div>
-        <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
-        <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
-      </div>
-    </div>
+    <Container>
+    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+      {hasPermission === false ? (
+        <Typography variant="h6" color="error">Camera permission is not granted or there was an error accessing the camera.</Typography>
+      ) : (
+        <>
+          <video ref={videoRef} width="640" height="480" autoPlay muted style={{ border: '1px solid black' }}></video>
+          <Box mt={3} display="flex" justifyContent="center" alignItems="center">
+            <IconButton
+              onClick={toggleRecording}
+              sx={{
+                width: 60,
+                height: 60,
+                backgroundColor: isRecording ? 'red' : 'transparent',
+                border: isRecording ? 'none' : '2px solid gray',
+                borderRadius: '50%',
+                '&:hover': {
+                  backgroundColor: isRecording ? 'darkred' : 'rgba(0, 0, 0, 0.1)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              {isRecording ? (
+                <StopIcon sx={{ fontSize: 30, color: 'white' }} />
+              ) : (
+                <FiberManualRecordIcon sx={{ fontSize: 30, color: 'red' }} />
+              )}
+            </IconButton>
+          </Box>
+        </>
+        )}
+      </Box>
+    </Container>
   );
 };
 
