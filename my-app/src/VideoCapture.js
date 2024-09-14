@@ -35,7 +35,7 @@ const VideoCapture = () => {
 
     recorder.ondataavailable = event => {
       if (event.data.size > 0) {
-        console.log
+        console.log();
         setRecordedChunks(prevChunks => [...prevChunks, event.data]);
       }
     };
