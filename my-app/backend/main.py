@@ -68,8 +68,9 @@ def upload_file():
             
             # Send API request with the appropriate file
             response = send_api_request(file_path)
+            print(response)
             if response:
-                return jsonify({'message': 'File uploaded and processed successfully!', 'filename': filename}), 200
+                return jsonify({'message': 'File uploaded and processed successfully!', 'response': response}), 200
             else:
                 return jsonify({'message': 'Failed to send API request'}), 500
         else:

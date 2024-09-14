@@ -84,7 +84,7 @@ const VideoCapture = () => {
           //startNewRecorder(videoRef.current.srcObject); // Start new recording
           mediaRecorder.start(); // Start recording
         }
-      }, 5000); // 2000ms = 2 seconds
+      }, 2000); // 2000ms = 2 seconds
 
       console.log('Recording started');
     }
@@ -119,7 +119,7 @@ const VideoCapture = () => {
       }
 
       const data = await response.json();
-      console.log('Upload successful:', data);
+      console.log('Upload successful frontend:', data);
     } catch (error) {
       console.error('Upload error:', error);
     }
