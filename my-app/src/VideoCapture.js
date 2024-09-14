@@ -4,7 +4,7 @@ const VideoCapture = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const videoRef = useRef(null);
+  const videoRef = useRef(null);  // Use ref for video element
 
   useEffect(() => {
     let stream;
@@ -24,7 +24,6 @@ const VideoCapture = () => {
         recorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: 'video/mp4' });
           uploadVideo(blob);
-          setRecordedChunks([]); // Clear chunks after upload
         };
 
         // Assign the stream to the video element
@@ -47,11 +46,11 @@ const VideoCapture = () => {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, []); // Empty dependency array ensures this runs only on mount/unmount
+  }, [recordedChunks]); // Dependency on recordedChunks to ensure it captures updates
 
   const startRecording = () => {
     if (mediaRecorder) {
-      setRecordedChunks([]); // Reset recorded chunks
+      setRecordedChunks([]);  // Reset recorded chunks
       mediaRecorder.start();
       setIsRecording(true);
     }
