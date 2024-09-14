@@ -2,7 +2,7 @@ import './App.css';
 import { useQuery } from "convex/react";
 import { api } from "./convex/_generated/api";
 import VideoUploader from './VideoUploader';
-import LiveFeedStream from './LiveFeedStream';
+import VideoCapture from './VideoCapture';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     async function fetchBalls() {
       try {
-        const response = await fetch('http://localhost:5000/api/balls');
+        const response = await fetch('http://localhost:8000/api/balls');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -37,6 +37,7 @@ function App() {
       {error && <div>Error: {error.message}</div>}
       <pre>{JSON.stringify(balls, null, 2)}</pre>
       <h1>Video Upload Page</h1>
+      <VideoCapture/>
     </div>
   );
 }
