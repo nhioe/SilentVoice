@@ -5,8 +5,8 @@ const VideoCapture = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const videoRef = useRef(null);
-  const chunkDuration = 3000; // Duration of each chunk in milliseconds
-  const chunkTimerRef = useRef(null); // Use a ref to store the timer ID
+  const recordingIntervalRef = useRef(null); // Ref to hold the interval ID
+  const [segmentCount, setSegmentCount] = useState(0); // To manage segment files
 
   useEffect(() => {
     let stream;
@@ -14,31 +14,7 @@ const VideoCapture = () => {
     const setupStream = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-        setMediaRecorder(recorder);
-
-        recorder.ondataavailable = event => {
-          if (event.data.size > 0) {
-            setRecordedChunks(prevChunks => [...prevChunks, event.data]);
-          }
-        };
-
-        recorder.onstop = () => {
-          if (recordedChunks.length > 0) {
-            // Split the recorded chunks into separate blobs
-            splitAndUploadChunks();
-            setRecordedChunks([]); // Clear chunks after upload
-          } else {
-            console.warn('No recorded chunks available.');
-          }
-        };
-      
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(error => {
-            console.error('Error playing video:', error);
-          });
-        }
+        startNewRecorder(stream); // Initialize with a new recorder
       } catch (error) {
         console.error('Error accessing media devices.', error);
       }
@@ -50,67 +26,86 @@ const VideoCapture = () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
-      if (chunkTimerRef.current) {
-        clearInterval(chunkTimerRef.current);
+    };
+  }, []);
+
+  const startNewRecorder = (stream) => {
+    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+    setMediaRecorder(recorder);
+
+    recorder.ondataavailable = event => {
+      if (event.data.size > 0) {
+        console.log
+        setRecordedChunks(prevChunks => [...prevChunks, event.data]);
       }
     };
-  }, [recordedChunks]);
+
+    recorder.onstop = () => {
+      if (recordedChunks.length > 0) {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const filename = `video_segment_${segmentCount}.webm`;
+        uploadVideo(blob, filename);
+        setRecordedChunks([]); // Clear chunks for the next segment
+        setSegmentCount(prevCount => prevCount + 1); // Increment segment count
+      } else {
+        console.warn('No recorded chunks available.');
+      }
+    };
+
+    // Assign the stream to the video element
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(error => {
+        console.error('Error playing video:', error);
+      });
+    }
+
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current); // Clear any existing interval
+    }
+
+    recordingIntervalRef.current = setInterval(() => {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        startNewRecorder(stream); // Start a new recorder for the next segment
+      }
+    }, 3000); // 3000ms = 3 seconds
+  };
 
   const startRecording = () => {
     if (mediaRecorder) {
-      setRecordedChunks([]);
-      mediaRecorder.start();
       setIsRecording(true);
+      mediaRecorder.start();
       console.log('Recording started');
-      
-      // Set up a timer to split the video into chunks
-      chunkTimerRef.current = setInterval(() => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.requestData(); // Request a new chunk
-        }
-      }, chunkDuration);
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorder) {
-      mediaRecorder.stop();
       setIsRecording(false);
+      mediaRecorder.stop();
       console.log('Recording stopped');
-      if (chunkTimerRef.current) {
-        clearInterval(chunkTimerRef.current);
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current); // Clear the recording interval
       }
     }
   };
 
-  const splitAndUploadChunks = async () => {
-    // Assuming that recordedChunks contains the chunks in the correct order
-    let chunkStart = 0;
-
-    while (chunkStart < recordedChunks.length) {
-      // Create a new Blob for each chunk
-      const chunk = new Blob(recordedChunks.slice(chunkStart, chunkStart + 1), { type: 'video/webm' });
-      console.log('Uploading chunk:', chunk);
-      await uploadVideo(chunk);
-      chunkStart += 1;
-    }
-  };
-
-  const uploadVideo = async (blob) => {
+  const uploadVideo = async (blob, filename) => {
     const formData = new FormData();
-    formData.append('video', blob, 'video.webm');
+    formData.append('video', blob, filename);
 
     try {
       const response = await fetch('http://localhost:8000/upload', {
         method: 'POST',
         body: formData,
       });
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Network response was not ok: ${response.status} - ${errorText}`);
       }
-
+  
       const data = await response.json();
       console.log('Upload successful:', data);
     } catch (error) {

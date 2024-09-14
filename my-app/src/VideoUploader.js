@@ -22,9 +22,9 @@ const VideoUploader = () => {
 
     try {
       const response = await fetch("https://symphoniclabs--symphonet-vsr-modal-htn-model-upload-static-htn.modal.run", {
-        method: 'POST',
-        body: formData,
-      });
+      method: 'POST',
+      body: formData,
+    });
 
       if (!response.ok) {
         throw new Error(`Upload failed: ${response.statusText}`);
