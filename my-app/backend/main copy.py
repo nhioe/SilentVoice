@@ -5,7 +5,6 @@ from werkzeug.utils import secure_filename
 import subprocess
 import requests
 import io
-import shutil
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for development
@@ -20,12 +19,6 @@ app.config['CONVERTED_FOLDER'] = CONVERTED_FOLDER
 # Create directories if they don't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CONVERTED_FOLDER, exist_ok=True)
-
-def clear_folders():
-    for folder in [UPLOAD_FOLDER, CONVERTED_FOLDER]:
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-        os.makedirs(folder)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -108,5 +101,4 @@ def send_api_request(file_path):
     return response.text
 
 if __name__ == '__main__':
-    clear_folders()
     app.run(port=8000, debug=True)

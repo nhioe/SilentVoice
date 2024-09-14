@@ -2,6 +2,7 @@ import './App.css';
 import { useQuery } from "convex/react";
 import { api } from "./convex/_generated/api";
 import VideoUploader from './VideoUploader';
+import VideoTest from './VideoTest';
 import VideoCapture from './VideoCapture';
 import { useEffect, useState } from 'react';
 

@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-const VideoCapture = () => {
+const VideoTest = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [segmentCount, setSegmentCount] = useState(0); // To manage segment files
-
+  const [recordedChunks, setRecordedChunks] = useState([]);
   const videoRef = useRef(null);
-  const recordedChunksRef = useRef([]);
-  const recordingIntervalRef = useRef(null);
-  var segments = 0;
+  const recordingIntervalRef = useRef(null); // Ref to hold the interval ID
+  const [segmentCount, setSegmentCount] = useState(0); // To manage segment files
 
   useEffect(() => {
     let stream;
@@ -29,7 +27,7 @@ const VideoCapture = () => {
         stream.getTracks().forEach(track => track.stop());
       }
       if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current); // Clean up interval
+        clearInterval(recordingIntervalRef.current); // Clear interval on component unmount
       }
     };
   }, []);
@@ -40,27 +38,17 @@ const VideoCapture = () => {
 
     recorder.ondataavailable = event => {
       if (event.data.size > 0) {
-        console.log("DATA: ", event.data);
-        // Append new data to recordedChunksRef
-        recordedChunksRef.current = [...recordedChunksRef.current, event.data];
+        console.log('Data available:', event.data);
+        setRecordedChunks(prevChunks => [...prevChunks, event.data]);
       }
     };
 
+    recorder.onstart = () => {
+      console.log('MediaRecorder started');
+    };
+
     recorder.onstop = () => {
-      // console.log(recordedChunksRef.current.length);
-      if (recordedChunksRef.current.length > 0) {
-        const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-        const filename = `video_segment_${segments}.webm`;
-        uploadVideo(blob, filename);
-        console.log("BLOBL", blob);
-        // Clear recordedChunksRef for the next segment
-        recordedChunksRef.current = [];
-        setSegmentCount(segments); // Increment segment count
-        segments = segments + 1;
-        console.log(segments);
-      } else {
-        console.warn('No recorded chunks available.');
-      }
+      console.log('MediaRecorder stopped');
     };
 
     if (videoRef.current) {
@@ -72,33 +60,26 @@ const VideoCapture = () => {
   };
 
   const startRecording = () => {
-    segments = 0;
     if (mediaRecorder) {
       setIsRecording(true);
-      mediaRecorder.start(); // Start recording
-      
-      // Set up a recording interval to restart every 2000 ms
-      recordingIntervalRef.current = setInterval(() => {
-        if (mediaRecorder) {
-          mediaRecorder.stop(); // Stop current recording
-          //startNewRecorder(videoRef.current.srcObject); // Start new recording
-          mediaRecorder.start(); // Start recording
-        }
-      }, 5000); // 2000ms = 2 seconds
-
+      mediaRecorder.start();
       console.log('Recording started');
+
+      recordingIntervalRef.current = setInterval(() => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.requestData(); // Request recorded data every 3 seconds
+        }
+      }, 3000);
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorder) {
       setIsRecording(false);
-      mediaRecorder.stop(); // Stop recording
+      mediaRecorder.stop();
       console.log('Recording stopped');
-
-      // Clean up the recording interval
       if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current);
+        clearInterval(recordingIntervalRef.current); // Clear the recording interval
       }
     }
   };
@@ -106,7 +87,7 @@ const VideoCapture = () => {
   const uploadVideo = async (blob, filename) => {
     const formData = new FormData();
     formData.append('video', blob, filename);
-
+    console.log("Attempting upload of ", filename);
     try {
       const response = await fetch('http://localhost:8000/upload', {
         method: 'POST',
@@ -125,6 +106,21 @@ const VideoCapture = () => {
     }
   };
 
+  // Call this function to handle chunk uploads and segment count updates
+  const handleChunkUpload = () => {
+    if (recordedChunks.length > 0) {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const filename = `video_segment_${segmentCount}.webm`;
+      uploadVideo(blob, filename);
+      setSegmentCount(prevCount => prevCount + 1); // Increment segment count after upload
+      setRecordedChunks([]); // Clear chunks after upload
+    }
+  };
+
+  useEffect(() => {
+    handleChunkUpload(); // Upload chunks periodically
+  }, [recordedChunks]);
+
   return (
     <div>
       <video ref={videoRef} width="640" height="480" autoPlay muted></video>
@@ -136,4 +132,4 @@ const VideoCapture = () => {
   );
 };
 
-export default VideoCapture;
+export default VideoTest;
