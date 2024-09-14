@@ -3,7 +3,16 @@ import { Button, Typography, Box, Container, IconButton, CircularProgress } from
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import StopIcon from '@mui/icons-material/Stop';
 
-const VideoCapture = () => {
+const VideoCapture = ({ setTranscriptText }) => {
+  const clearErrors = [
+    'No Speech Detected',
+    'No Face Found',
+    'Face detected was not longer than 1 second, please use a longer video.',
+  ]
+  const commonErrors = [
+    "I don't know."
+  ];
+
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [segmentCount, setSegmentCount] = useState(0); // To manage segment files
@@ -133,6 +142,13 @@ const VideoCapture = () => {
 
       const data = await response.json();
       console.log('Upload successful frontend:', data);
+      let dialog = data.response;
+      if (clearErrors.includes(dialog)) {
+        console.log("Not printing error to transcript.");
+      } else {
+        dialog = dialog.replace(/["]+/g, '');
+        setTranscriptText(dialog);
+      }
     } catch (error) {
       console.error('Upload error:', error);
     }
