@@ -21,7 +21,7 @@ const VideoUploader = () => {
     formData.append('video', file);
 
     try {
-      const response = await fetch("https://symphoniclabs--symphonet-vsr-modal-model-upload-static.modal.run", {
+      const response = await fetch("https://symphoniclabs--symphonet-vsr-modal-htn-model-upload-static-htn.modal.run", {
         method: 'POST',
         body: formData,
       });

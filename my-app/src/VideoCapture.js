@@ -2,9 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 
 const VideoCapture = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [recordedChunks, setRecordedChunks] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const videoRef = useRef(null);  // Use ref for video element
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const videoRef = useRef(null);
+  const chunkDuration = 3000; // Duration of each chunk in milliseconds
+  const chunkTimerRef = useRef(null); // Use a ref to store the timer ID
 
   useEffect(() => {
     let stream;
@@ -12,7 +14,7 @@ const VideoCapture = () => {
     const setupStream = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const recorder = new MediaRecorder(stream);
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
         setMediaRecorder(recorder);
 
         recorder.ondataavailable = event => {
@@ -22,11 +24,15 @@ const VideoCapture = () => {
         };
 
         recorder.onstop = () => {
-          const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-          uploadVideo(blob);
+          if (recordedChunks.length > 0) {
+            // Split the recorded chunks into separate blobs
+            splitAndUploadChunks();
+            setRecordedChunks([]); // Clear chunks after upload
+          } else {
+            console.warn('No recorded chunks available.');
+          }
         };
-
-        // Assign the stream to the video element
+      
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play().catch(error => {
@@ -41,18 +47,28 @@ const VideoCapture = () => {
     setupStream();
 
     return () => {
-      // Cleanup: Stop all tracks and release resources
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      if (chunkTimerRef.current) {
+        clearInterval(chunkTimerRef.current);
+      }
     };
-  }, [recordedChunks]); // Dependency on recordedChunks to ensure it captures updates
+  }, [recordedChunks]);
 
   const startRecording = () => {
     if (mediaRecorder) {
-      setRecordedChunks([]);  // Reset recorded chunks
+      setRecordedChunks([]);
       mediaRecorder.start();
       setIsRecording(true);
+      console.log('Recording started');
+      
+      // Set up a timer to split the video into chunks
+      chunkTimerRef.current = setInterval(() => {
+        if (mediaRecorder.state === 'recording') {
+          mediaRecorder.requestData(); // Request a new chunk
+        }
+      }, chunkDuration);
     }
   };
 
@@ -60,24 +76,41 @@ const VideoCapture = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
       setIsRecording(false);
+      console.log('Recording stopped');
+      if (chunkTimerRef.current) {
+        clearInterval(chunkTimerRef.current);
+      }
+    }
+  };
+
+  const splitAndUploadChunks = async () => {
+    // Assuming that recordedChunks contains the chunks in the correct order
+    let chunkStart = 0;
+
+    while (chunkStart < recordedChunks.length) {
+      // Create a new Blob for each chunk
+      const chunk = new Blob(recordedChunks.slice(chunkStart, chunkStart + 1), { type: 'video/webm' });
+      console.log('Uploading chunk:', chunk);
+      await uploadVideo(chunk);
+      chunkStart += 1;
     }
   };
 
   const uploadVideo = async (blob) => {
     const formData = new FormData();
-    formData.append('video', blob, 'video.mp4');
+    formData.append('video', blob, 'video.webm');
 
     try {
       const response = await fetch('http://localhost:8000/upload', {
         method: 'POST',
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Network response was not ok: ${response.status} - ${errorText}`);
       }
-  
+
       const data = await response.json();
       console.log('Upload successful:', data);
     } catch (error) {

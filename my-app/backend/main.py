@@ -6,14 +6,13 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for development
 
-# Sample data for demonstration
 balls = [
     {"id": 1, "color": "red"},
     {"id": 2, "color": "blue"}
 ]
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'mp4'}
+ALLOWED_EXTENSIONS = {'mp4', 'webm'}  # Added 'webm'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -41,7 +40,8 @@ def upload_file():
     else:
         return jsonify({'message': 'File type not allowed'}), 400
 
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-    app.run(port=8000)
+    app.run(port=8000, debug=True)
