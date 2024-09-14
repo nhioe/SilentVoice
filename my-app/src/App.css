@@ -1,33 +1,107 @@
-.App {
-  text-align: center;
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('./Banana Summer.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'MyCustomFont', sans-serif;
+}
+
+/* Background */
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('./resources/flower.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.75; /* Adjust transparency here */
+  z-index: -1; /* Ensure background is behind the content */
+}
+
+/* Main Content Container */
+.App {
+  position: relative; /* Ensure positioning for child elements */
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(116, 89, 169, 0.9);
+  overflow: hidden; /* Prevent any overflow from child elements */
+}
+
+/* Logo */
+.logo {
+  position: absolute;
+  top: 10px; /* Adjust the top margin as needed */
+  right: 10px; /* Adjust the right margin as needed */
+  width: 200px; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Body */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif; /* Clean and modern font */
+  color: #070c38;
+  background: linear-gradient(135deg, #0f1b2a, #3a3a6b); /* Space-themed gradient */
+  background-image: url('https://example.com/space-background.jpg'); /* Replace with your space-themed image URL */
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center; /* Ensure the background is centered */
+}
+
+/* App Container */
+.App {
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(155, 101, 193, 0.5);
+  position: relative; /* Ensure relative positioning for proper alignment */
+  overflow: hidden; /* Ensure background does not spill out */
+}
+
+/* Logo Styles */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
 
+/* Logo Animation */
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/* Header Styles */
 .App-header {
-  background-color: #282c34;
+  background-color: rgba(40, 44, 52, 0.9); /* Slightly transparent dark background */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: calc(20px + 2vmin); /* Slightly larger font size */
+  color: #320e3c; /* Lighter text color */
+  padding: 20px;
+  border-radius: 8px; /* Rounded corners for a softer look */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Soft shadow for depth */
 }
 
+/* Link Styles */
 .App-link {
-  color: #61dafb;
+  color: #61dafb; /* Bright blue link color */
+  text-decoration: none;
+  font-weight: bold; /* Make links stand out */
 }
 
+.App-link:hover {
+  text-decoration: underline; /* Underline on hover for better UX */
+}
+
+/* Logo Spin Animation */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

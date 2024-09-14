@@ -5,6 +5,7 @@ import VideoUploader from './VideoUploader';
 import VideoTest from './VideoTest';
 import VideoCapture from './VideoCapture';
 import { useEffect, useState } from 'react';
+import logo from './resources/LOGO.png'; // Adjust the path as needed
 
 function App() {
   const tasks = useQuery(api.tasks.get);
@@ -32,12 +33,11 @@ function App() {
 
   return (
     <div className="App">
-      <h2>Tasks</h2>
-      <pre>{JSON.stringify(tasks, null, 2)}</pre>
-      <h2>Balls</h2>
-      {error && <div>Error: {error.message}</div>}
-      <pre>{JSON.stringify(balls, null, 2)}</pre>
-      <h1>Video Upload Page</h1>
+      <div className="background"></div>
+      <div className="content">
+        <img src={logo} alt="Logo" className="logo" />
+      </div>
+      <h1>DEMO</h1>
       <VideoCapture/>
     </div>
   );
