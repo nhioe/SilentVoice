@@ -3,10 +3,12 @@ import React, { useEffect, useState, useRef } from 'react';
 const VideoCapture = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState([]);
-  const videoRef = useRef(null);
-  const recordingIntervalRef = useRef(null); // Ref to hold the interval ID
   const [segmentCount, setSegmentCount] = useState(0); // To manage segment files
+
+  const videoRef = useRef(null);
+  const recordedChunksRef = useRef([]);
+  const recordingIntervalRef = useRef(null);
+  var segments = 0;
 
   useEffect(() => {
     let stream;
@@ -26,6 +28,9 @@ const VideoCapture = () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current); // Clean up interval
+      }
     };
   }, []);
 
@@ -35,47 +40,52 @@ const VideoCapture = () => {
 
     recorder.ondataavailable = event => {
       if (event.data.size > 0) {
-        console.log();
-        setRecordedChunks(prevChunks => [...prevChunks, event.data]);
+        console.log("DATA: ", event.data);
+        // Append new data to recordedChunksRef
+        recordedChunksRef.current = [...recordedChunksRef.current, event.data];
       }
     };
 
     recorder.onstop = () => {
-      if (recordedChunks.length > 0) {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const filename = `video_segment_${segmentCount}.webm`;
+      console.log(recordedChunksRef.current.length);
+      if (recordedChunksRef.current.length > 0) {
+        const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+        const filename = `video_segment_${segments}.webm`;
         uploadVideo(blob, filename);
-        setRecordedChunks([]); // Clear chunks for the next segment
-        setSegmentCount(prevCount => prevCount + 1); // Increment segment count
+        console.log("BLOBL", blob);
+        // Clear recordedChunksRef for the next segment
+        recordedChunksRef.current = [];
+        setSegmentCount(segments); // Increment segment count
+        segments = segments + 1;
+        console.log(segments);
       } else {
         console.warn('No recorded chunks available.');
       }
     };
 
-    // Assign the stream to the video element
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.play().catch(error => {
         console.error('Error playing video:', error);
       });
     }
-
-    if (recordingIntervalRef.current) {
-      clearInterval(recordingIntervalRef.current); // Clear any existing interval
-    }
-
-    recordingIntervalRef.current = setInterval(() => {
-      if (mediaRecorder && isRecording) {
-        mediaRecorder.stop();
-        startNewRecorder(stream); // Start a new recorder for the next segment
-      }
-    }, 3000); // 3000ms = 3 seconds
   };
 
   const startRecording = () => {
+    segments = 0;
     if (mediaRecorder) {
       setIsRecording(true);
-      mediaRecorder.start();
+      mediaRecorder.start(); // Start recording
+      
+      // Set up a recording interval to restart every 2000 ms
+      recordingIntervalRef.current = setInterval(() => {
+        if (mediaRecorder) {
+          mediaRecorder.stop(); // Stop current recording
+          //startNewRecorder(videoRef.current.srcObject); // Start new recording
+          mediaRecorder.start(); // Start recording
+        }
+      }, 5000); // 2000ms = 2 seconds
+
       console.log('Recording started');
     }
   };
@@ -83,10 +93,12 @@ const VideoCapture = () => {
   const stopRecording = () => {
     if (mediaRecorder) {
       setIsRecording(false);
-      mediaRecorder.stop();
+      mediaRecorder.stop(); // Stop recording
       console.log('Recording stopped');
+
+      // Clean up the recording interval
       if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current); // Clear the recording interval
+        clearInterval(recordingIntervalRef.current);
       }
     }
   };
@@ -100,12 +112,12 @@ const VideoCapture = () => {
         method: 'POST',
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Network response was not ok: ${response.status} - ${errorText}`);
       }
-  
+
       const data = await response.json();
       console.log('Upload successful:', data);
     } catch (error) {
