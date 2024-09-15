@@ -119,7 +119,8 @@ const Transcript = ({ newText }) => {
                       letterSpacing: '0.5px',
                     }}
                   >
-                    "We don't think we correctly interpreted this phrase. Make sure your face is visible, mouth movements are clear, and you're centered in the frame."
+                    Confidence: {chunk.confidence + " | "}
+                     We don't think we correctly interpreted this phrase. Make sure your face is visible, mouth movements are clear, and you're centered in the frame.
                   </Typography>
                 ) : ''
               }
