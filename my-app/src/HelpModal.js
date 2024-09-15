@@ -2,6 +2,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { motion } from 'framer-motion';
 
 const HelpModal = ({ open, onClose }) => {
   return (
@@ -23,10 +24,16 @@ const HelpModal = ({ open, onClose }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Typography variant="body1">
-          {/* Add your help content here */}
-          This is where you can provide information to help the users.
-        </Typography>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <Typography variant="body1">
+            {/* Add your help content here */}
+            This is where you can provide information to help the users.
+          </Typography>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
