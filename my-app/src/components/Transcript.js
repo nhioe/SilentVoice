@@ -111,7 +111,7 @@ const Transcript = ({ newText }) => {
               title={
                 chunk.sentiment === 'NoConf' ? (
                   <Typography
-                    variant="body2" // smaller text
+                    variant="body2"
                     sx={{
                       color: 'white',
                       fontWeight: 'medium',

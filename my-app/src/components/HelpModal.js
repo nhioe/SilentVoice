@@ -25,24 +25,24 @@ const HelpModal = ({ open, onClose }) => {
       fullWidth 
       maxWidth="md"
       sx={{ 
-        '& .MuiDialogContent-root': { // Center content
+        '& .MuiDialogContent-root': {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'left',
           textAlign: 'left',
         },
-        '& .MuiDialog-paper': { // Set darker background color
-          backgroundColor: '#3259a6', // Darker background color
+        '& .MuiDialog-paper': {
+          backgroundColor: '#3259a6',
         }
       }}
     >
       <DialogTitle
         sx={{ 
-          fontFamily: 'MyCustomFont', // Use your custom font
-          fontSize: '2rem',        // Adjust the font size
-          fontWeight: 'bold',      // Make it bold
+          fontFamily: 'MyCustomFont', 
+          fontSize: '2rem',    
+          fontWeight: 'bold',    
           textAlign: 'center',
-          color: '#000',           // Change text color to black
+          color: '#000',           
           position: 'relative',
         }}
       >
@@ -78,7 +78,7 @@ const HelpModal = ({ open, onClose }) => {
             <motion.div
               key={index}
               variants={wordVariants}
-              className="help-modal-content"  // Apply custom class
+              className="help-modal-content"  
             >
               {word}
             </motion.div>
