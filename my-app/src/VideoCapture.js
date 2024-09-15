@@ -337,7 +337,7 @@ const VideoCapture = ({ setTranscriptText }) => {
         dialog = dialog.replace(/["]+/g, '');
         for (const error in commonErrors) {
           if (dialog.includes(error)) {
-            throw("Not printing error to transcript.");
+            throw new Error("Not printing error to transcript.");
           }
         }
         setTranscriptText(dialog);
@@ -348,12 +348,14 @@ const VideoCapture = ({ setTranscriptText }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '640px', margin: '0 auto', mb: 4 }}>
+    <Box sx={{ width: '100%', maxWidth: '620px', margin: '0 auto', mb: 4 }}>
       {hasPermission === false ? (
-        <Typography variant="h6" color="error">Camera permission is not granted or there was an error accessing the camera.</Typography>
+        <Typography variant="h6" color="error" align="center">
+          Camera permission is not granted or there was an error accessing the camera.
+        </Typography>
       ) : (
         <Paper elevation={6} sx={{ borderRadius: '16px', overflow: 'hidden' }}>
-          <Box sx={{ position: 'relative', paddingTop: '75%', backgroundColor: '#000' }}>
+          <Box sx={{ position: 'relative', paddingTop: '56.25%', backgroundColor: '#000' }}>
             <video
               ref={videoRef}
               style={{
@@ -368,23 +370,40 @@ const VideoCapture = ({ setTranscriptText }) => {
               muted
             />
           </Box>
-          <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ 
+            p: 2, 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            background: 'linear-gradient(to right, #3b82f6, #4854d4)',
+          }}>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: 'white', 
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}
+            >
+              {isRecording ? 'Recording' : 'Ready'}
+            </Typography>
             <IconButton
               onClick={toggleRecording}
               sx={{
-                width: 80,
-                height: 80,
-                backgroundColor: isRecording ? 'secondary.main' : 'primary.main',
+                width: 48,
+                height: 48,
+                backgroundColor: 'white',
                 '&:hover': {
-                  backgroundColor: isRecording ? 'secondary.dark' : 'primary.dark',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
                 },
                 transition: 'all 0.3s ease',
               }}
             >
               {isRecording ? (
-                <StopIcon sx={{ fontSize: 40, color: 'white' }} />
+                <StopIcon sx={{ fontSize: 24, color: '#e11d48' }} />
               ) : (
-                <FiberManualRecordIcon sx={{ fontSize: 40, color: 'white' }} />
+                <FiberManualRecordIcon sx={{ fontSize: 24, color: '#3b82f6' }} />
               )}
             </IconButton>
           </Box>
