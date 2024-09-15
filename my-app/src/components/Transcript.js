@@ -106,6 +106,7 @@ const Transcript = ({ newText }) => {
   
             return (
               <Tooltip
+              placement="right-start"
               key={`${chunkIndex}-${wordIndex}`}
               title={
                 chunk.sentiment === 'NoConf' ? (
@@ -118,7 +119,7 @@ const Transcript = ({ newText }) => {
                       letterSpacing: '0.5px',
                     }}
                   >
-                    "We couldn't clearly interpret this word. Make sure your face is visible, mouth movements are clear, and you're centered in the frame (at least 50%)."
+                    "We don't think we correctly interpreted this phrase. Make sure your face is visible, mouth movements are clear, and you're centered in the frame."
                   </Typography>
                 ) : ''
               }

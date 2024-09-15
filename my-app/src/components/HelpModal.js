@@ -2,14 +2,14 @@ import React from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
-import './App.css'; // Import your CSS here which includes font imports
+import '../App.css';
 
 const words = [
-  "Welcome to Silent Voice, the live feed lip reading application.",
-  "For maximal accuracy, ensure the following:",
-  "Make sure the camera can see your full face.",
-  "If possible, ensure your face is as close to the camera as possible (without being unvisible).",
-  "Announce your words clearly -- it helps lots!",
+  "Welcome to Silent Voice, the live lip reading application!",
+  "To ensure the highest accuracy, please follow these guidelines:",
+  "1. Make sure the camera captures your entire face.",
+  "2. Position yourself as close to the camera as possible without being out of view.",
+  "3. Enunciate your words clearly for best results."
 ];
 
 const wordVariants = {
@@ -23,13 +23,13 @@ const HelpModal = ({ open, onClose }) => {
       open={open} 
       onClose={onClose} 
       fullWidth 
-      maxWidth="sm"
+      maxWidth="md"
       sx={{ 
         '& .MuiDialogContent-root': { // Center content
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
+          alignItems: 'left',
+          textAlign: 'left',
         },
         '& .MuiDialog-paper': { // Set darker background color
           backgroundColor: '#3259a6', // Darker background color
@@ -69,8 +69,8 @@ const HelpModal = ({ open, onClose }) => {
           sx={{ 
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
+            alignItems: 'left',
+            textAlign: 'left',
             gap: '1em',
           }}
         >
