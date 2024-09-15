@@ -105,8 +105,44 @@ def send_api_request(file_path):
         video = io.BytesIO(video_file.read())
 
     response = requests.post(url, files={'video': ('input.mp4', video, 'video/mp4')})
+    result = response.text;
+    # Replace with your actual Cohere API key
+    # api_key = "PUIO2UreYrGy16J4fUBbS34RTCqteTK8aEvTZ9Yk"
 
-    return response.text
+    # # Choose the Cohere API endpoint
+    # endpoint = "https://api.cohere.ai/v1/generate"
+
+    # # Assuming data.response contains the text you want to fix
+
+    # # Prepare the request data
+    # request_data = {
+    #     "model": "command",
+    #     "prompt": f"Please ensure this set of words makes sense. If not correct it to the best of your ability. Please do not add any other text other than ones directly involved in the improvement of these word sets.: {response.text}",
+    #     "max_tokens": 50,
+    #     "temperature": 0.7,
+    # }
+
+    # # Add the API key to the headers
+    # headers = {
+    #     "Authorization": f"Bearer {api_key}",
+    #     "Content-Type": "application/json",
+    # }
+
+    # # Make the API call
+    # response = requests.post(endpoint, json=request_data, headers=headers)
+    
+    # # Check the response status
+    # if response.status_code == 200:
+    #     # Parse the response data
+    #     response_json = response.json()
+    #     generated_text = response_json["generations"][0]["text"]
+    #     print("Generated Text:", generated_text)
+    #     result = generated_text
+    # else:
+    #     print("Error:", response.json()["message"])
+
+
+    return result
 
 @app.route('/api/receive-result', methods=['POST'])
 def receive_result():
