@@ -74,10 +74,9 @@ const Content = () => {
                 '&:hover': {
                   color: theme.palette.primary.dark,
                 },
-                fontSize: '2rem',
               }}
             >
-              <HomeIcon />
+              <HomeIcon sx={{ fontSize: '3rem' }} /> {/* Set the icon size */}
             </IconButton>
           </Box>
           <Box
@@ -96,10 +95,10 @@ const Content = () => {
                 '&:hover': {
                   color: theme.palette.primary.dark,
                 },
-                fontSize: '2rem', // Adjust icon size here
+                fontSize: '2rem',
               }}
             >
-              <HelpOutlineIcon />
+              <HelpOutlineIcon sx={{ fontSize: '3rem' }}/>
             </IconButton>
           </Box>
           <Box

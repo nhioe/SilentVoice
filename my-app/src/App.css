@@ -1,9 +1,10 @@
 @font-face {
   font-family: 'MyCustomFont';
-  src: url('./Banana Summer.otf') format('opentype');
+  src: url('./LEMONMILK-Regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
+
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'MyCustomFont', sans-serif;
@@ -110,3 +111,20 @@ body {
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: 'RowsOfSun';
+  src: url('./sunflowers.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.help-modal-content {
+  font-family: 'MyCustomFont', sans-serif;
+  font-size: 0.8rem;    /* Make the font size larger if needed */
+  letter-spacing: 0.1em;  /* Increase letter spacing if needed */
+  color: #111;
+  display: inline-block; /* Ensure each word is treated separately */
+  margin-right: 0.2em;  /* Add space between words if needed */
+}
+
