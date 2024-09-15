@@ -13,10 +13,10 @@ import HelpModal from './HelpModal';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2dd4bf',
+      main: '#3363BF',
     },
     background: {
-      default: '#f3f4f6',
+      default: '#10172A',
     },
   },
   typography: {
@@ -58,38 +58,50 @@ const Content = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Container maxWidth="lg" sx={{ position: 'relative' }}>
-          <IconButton
-            onClick={handleHomeClick}
+          <Box
             sx={{
               position: 'fixed',
               top: 16,
               left: 16,
-              backgroundColor: theme.palette.primary.main,
-              color: 'white',
               zIndex: 1200,
-              '&:hover': {
-                backgroundColor: theme.palette.primary.dark,
-              },
             }}
           >
-            <HomeIcon />
-          </IconButton>
-          <IconButton
-            onClick={handleHelpClick}
+            <IconButton
+              onClick={handleHomeClick}
+              sx={{
+                backgroundColor: 'transparent',
+                color: theme.palette.primary.main,
+                '&:hover': {
+                  color: theme.palette.primary.dark,
+                },
+                fontSize: '2rem',
+              }}
+            >
+              <HomeIcon />
+            </IconButton>
+          </Box>
+          <Box
             sx={{
               position: 'fixed',
               bottom: 16,
               left: 16,
-              backgroundColor: theme.palette.primary.main,
-              color: 'white',
               zIndex: 1200,
-              '&:hover': {
-                backgroundColor: theme.palette.primary.dark,
-              },
             }}
           >
-            <HelpOutlineIcon />
-          </IconButton>
+            <IconButton
+              onClick={handleHelpClick}
+              sx={{
+                backgroundColor: 'transparent',
+                color: theme.palette.primary.main,
+                '&:hover': {
+                  color: theme.palette.primary.dark,
+                },
+                fontSize: '2rem', // Adjust icon size here
+              }}
+            >
+              <HelpOutlineIcon />
+            </IconButton>
+          </Box>
           <Box
             display="flex"
             justifyContent="center"

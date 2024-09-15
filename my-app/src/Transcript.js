@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, IconButton, Paper, Tooltip } from '@mui/material';
+import { Box, Typography, IconButton, Paper } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import PauseIcon from '@mui/icons-material/Pause';
+
+// Example of a custom font
+import '@fontsource/roboto'; // Make sure to install @fontsource/roboto or your chosen font
 
 const Transcript = ({ newText }) => {
   const [transcript, setTranscript] = useState('');
@@ -117,17 +120,31 @@ const Transcript = ({ newText }) => {
             whiteSpace: 'pre-line',
           }}
         >
-          <Typography variant="body1">
+          <Typography
+            variant="body1"
+            sx={{
+              fontFamily: 'Roboto, sans-serif', // Change to your desired font
+              fontSize: '1rem', // Adjust font size as needed
+              color: '#333' // Adjust text color if needed
+            }}
+          >
             {getHighlightedText()}
           </Typography>
         </Box>
       </Paper>
-      <Tooltip title={isSpeaking ? "Pause text-to-speech" : "Start text-to-speech"}>
+
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          mb: 2
+        }}
+      >
         <IconButton
           onClick={toggleTextToSpeech}
           disabled={!transcript}
           sx={{
-            alignSelf: 'center',
             backgroundColor: isSpeaking ? 'secondary.main' : 'primary.main',
             color: 'white',
             '&:hover': {
@@ -137,8 +154,9 @@ const Transcript = ({ newText }) => {
               backgroundColor: 'grey.400',
             },
             transition: 'background-color 0.3s ease',
-            width: '60px',
-            height: '60px',
+            width: '50px',
+            height: '50px',
+            mr: 2
           }}
         >
           {isSpeaking ? (
@@ -147,7 +165,18 @@ const Transcript = ({ newText }) => {
             <VolumeUpIcon sx={{ fontSize: 32 }} />
           )}
         </IconButton>
-      </Tooltip>
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'white',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+          }}
+        >
+          Convert to Text-To-Speech
+        </Typography>
+      </Box>
     </Box>
   );
 };

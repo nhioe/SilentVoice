@@ -205,9 +205,6 @@ const VideoCapture = ({ setTranscriptText }) => {
     'No Face Found',
     'Face detected was not longer than 1 second, please use a longer video.',
   ];
-  const commonErrors = [
-    "I don't know.",
-  ];
 
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -335,11 +332,6 @@ const VideoCapture = ({ setTranscriptText }) => {
         console.log("Not printing error to transcript.");
       } else {
         dialog = dialog.replace(/["]+/g, '');
-        for (const error in commonErrors) {
-          if (dialog.includes(error)) {
-            throw new Error("Not printing error to transcript.");
-          }
-        }
         setTranscriptText(dialog);
       }
     } catch (error) {
@@ -375,7 +367,7 @@ const VideoCapture = ({ setTranscriptText }) => {
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center',
-            background: 'linear-gradient(to right, #3b82f6, #4854d4)',
+            background: 'linear-gradient(to right, #3b82f6, #283e7a)',
           }}>
             <Typography 
               variant="body1" 
