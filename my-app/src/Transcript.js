@@ -90,12 +90,12 @@ const Transcript = ({ newText }) => {
           }}
           onMouseEnter={(e) => {
             if (chunk.sentiment === 'NoConf') {
-              e.currentTarget.style.backgroundColor = '#ffcccc'; // Light red on hover
+              e.currentTarget.style.backgroundColor = '#ffcccc';
             }
           }}
           onMouseLeave={(e) => {
             if (chunk.sentiment === 'NoConf') {
-              e.currentTarget.style.backgroundColor = 'transparent'; // Reset when hover ends
+              e.currentTarget.style.backgroundColor = 'transparent';
             }
           }}
         >
@@ -106,24 +106,40 @@ const Transcript = ({ newText }) => {
   
             return (
               <Tooltip
-                key={`${chunkIndex}-${wordIndex}`}
-                title={chunk.sentiment === 'NoConf' ? `Confidence: ${chunk.confidence}` : ''}
+              key={`${chunkIndex}-${wordIndex}`}
+              title={
+                chunk.sentiment === 'NoConf' ? (
+                  <Typography
+                    variant="body2" // smaller text
+                    sx={{
+                      color: 'white',
+                      fontWeight: 'medium',
+                      textTransform: 'none',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    "We couldn't clearly interpret this word. Make sure your face is visible, mouth movements are clear, and you're centered in the frame (at least 50%)."
+                  </Typography>
+                ) : ''
+              }
+              arrow
+            >
+              <span
+                style={{
+                  backgroundColor: 
+                    isSpeaking && globalIndex >= ttsRange.start && globalIndex < ttsRange.end
+                      ? globalIndex === currentWordIndex
+                        ? '#ffeb3b'
+                        : '#f5f5dc'
+                      : 'transparent',
+                  textDecoration: chunk.sentiment === 'NoConf' ? 'underline wavy red' : 'none',
+                  transition: 'background-color 0.3s ease'
+                }}
               >
-                <span
-                  style={{
-                    backgroundColor: 
-                      isSpeaking && globalIndex >= ttsRange.start && globalIndex < ttsRange.end
-                        ? globalIndex === currentWordIndex
-                          ? '#ffeb3b' // Dark yellow for current word
-                          : '#f5f5dc' // Beige for other spoken words
-                        : 'transparent',
-                    textDecoration: chunk.sentiment === 'NoConf' ? 'underline wavy red' : 'none',
-                    transition: 'background-color 0.3s ease'
-                  }}
-                >
-                  {word}{' '}
-                </span>
-              </Tooltip>
+                {word}{' '}
+              </span>
+            </Tooltip>
+
             );
           })}
         </span>
