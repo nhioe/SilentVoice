@@ -17,4 +17,7 @@ examples = [
     ClassifyExample(text="We desire to be loved",
                     label="Conf"),
     ClassifyExample(text="One two three four", label="Conf"),
+    ClassifyExample(text="That's what I'm going to do.", label="NoConf"),
+    ClassifyExample(text="That's what I'm doing.", label="NoConf"),
+    ClassifyExample(text="I like Apples", label="Conf"),
 ]
