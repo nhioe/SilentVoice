@@ -66,18 +66,24 @@ const Content = () => {
               zIndex: 1200,
             }}
           >
-            <IconButton
-              onClick={handleHomeClick}
-              sx={{
-                backgroundColor: 'transparent',
-                color: theme.palette.primary.main,
-                '&:hover': {
-                  color: theme.palette.primary.dark,
-                },
-              }}
+            <motion.div
+              whileHover={{ scale: 10, opacity: 0  }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
-              <HomeIcon sx={{ fontSize: '3rem' }} /> {/* Set the icon size */}
-            </IconButton>
+              <IconButton
+                onClick={handleHomeClick}
+                sx={{
+                  backgroundColor: 'transparent',
+                  color: theme.palette.primary.main,
+                  '&:hover': {
+                    color: theme.palette.primary.dark,
+                  },
+                }}
+              >
+                <HomeIcon sx={{ fontSize: '3rem' }} />
+              </IconButton>
+            </motion.div>
           </Box>
           <Box
             sx={{
@@ -87,19 +93,25 @@ const Content = () => {
               zIndex: 1200,
             }}
           >
-            <IconButton
-              onClick={handleHelpClick}
-              sx={{
-                backgroundColor: 'transparent',
-                color: theme.palette.primary.main,
-                '&:hover': {
-                  color: theme.palette.primary.dark,
-                },
-                fontSize: '2rem',
-              }}
+            <motion.div
+              whileHover={{ scale: 1.2, rotate: -10 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
-              <HelpOutlineIcon sx={{ fontSize: '3rem' }}/>
-            </IconButton>
+              <IconButton
+                onClick={handleHelpClick}
+                sx={{
+                  backgroundColor: 'transparent',
+                  color: theme.palette.primary.main,
+                  '&:hover': {
+                    color: theme.palette.primary.dark,
+                  },
+                  fontSize: '2rem',
+                }}
+              >
+                <HelpOutlineIcon sx={{ fontSize: '3rem' }} />
+              </IconButton>
+            </motion.div>
           </Box>
           <Box
             display="flex"
@@ -123,13 +135,13 @@ const Content = () => {
               sx={{
                 flex: '1 1 auto',
                 maxWidth: '30vw',
-                maxHeight: '90vh', // Increased height
+                maxHeight: '90vh',
                 overflowY: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 minWidth: '300px',
-                height: '90vh', // Increased height
+                height: '90vh',
                 zIndex: 1,
               }}
             >
