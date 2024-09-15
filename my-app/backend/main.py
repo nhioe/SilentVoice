@@ -35,15 +35,6 @@ def clear_folders():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-balls = [
-    {"id": 1, "color": "red"},
-    {"id": 2, "color": "blue"}
-]
-
-@app.route('/api/balls', methods=['GET'])
-def get_balls():
-    return jsonify(balls)
-
 @app.route('/upload', methods=['POST'])
 def upload_file():
     try:
@@ -121,9 +112,6 @@ def send_api_request(file_path):
     print(type(response))
     sentiment = response.classifications[0].prediction
     percent = response.classifications[0].confidence
-    # Extract the most likely prediction from the response
-    # most_likely_prediction = max(response['predictions'], key=lambda x: x['probability'])
-    # sentiment = most_likely_prediction['probability']
 
     return result, sentiment, percent
 
