@@ -32,7 +32,7 @@ const theme = createTheme({
 });
 
 const Content = () => {
-  const [transcriptText, setTranscriptText] = useState('');
+  const [transcriptText, setTranscriptText] = useState({});
   const [openHelp, setOpenHelp] = useState(false);
   const navigate = useNavigate();
 
@@ -123,13 +123,13 @@ const Content = () => {
               sx={{
                 flex: '1 1 auto',
                 maxWidth: '30vw',
-                maxHeight: '80vh',
+                maxHeight: '90vh', // Increased height
                 overflowY: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 minWidth: '300px',
-                height: '80vh',
+                height: '90vh', // Increased height
                 zIndex: 1,
               }}
             >

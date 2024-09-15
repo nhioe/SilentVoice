@@ -331,8 +331,7 @@ const VideoCapture = ({ setTranscriptText }) => {
       if (clearErrors.includes(dialog)) {
         console.log("Not printing error to transcript.");
       } else {
-        dialog = dialog.replace(/["]+/g, '');
-        setTranscriptText(dialog);
+        setTranscriptText(data);
       }
     } catch (error) {
       console.error('Upload error:', error);

@@ -1,37 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, IconButton, Paper } from '@mui/material';
+import { Box, Typography, IconButton, Paper, Tooltip } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import PauseIcon from '@mui/icons-material/Pause';
-
-// Example of a custom font
-import '@fontsource/roboto'; // Make sure to install @fontsource/roboto or your chosen font
+import '@fontsource/roboto';
 
 const Transcript = ({ newText }) => {
-  const [transcript, setTranscript] = useState('');
+  const [transcript, setTranscript] = useState([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [ttsRange, setTtsRange] = useState({ start: 0, end: 0 });
   const transcriptRef = useRef(null);
-  const isUserScrolling = useRef(false);
   const utteranceRef = useRef(null);
 
+  // Update transcript with newText chunks
   useEffect(() => {
     if (newText) {
-      setTranscript(prevTranscript => prevTranscript + newText + ' ');
+      const { response: dialog, sentiment, confidence } = newText;
+      if (dialog) {
+        setTranscript(prevTranscript => [
+          ...prevTranscript,
+          { dialog: dialog.replace(/["]+/g, ''), sentiment, confidence }
+        ]);
+      }
     }
   }, [newText]);
 
+  // Auto scroll to the bottom on transcript update
   useEffect(() => {
-    if (!isUserScrolling.current && transcriptRef.current) {
+    if (transcriptRef.current) {
       transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
     }
   }, [transcript]);
 
-  const handleScroll = () => {
-    const { scrollTop, scrollHeight, clientHeight } = transcriptRef.current;
-    isUserScrolling.current = Math.abs(scrollHeight - scrollTop - clientHeight) > 10;
-  };
-
+  // Handle Text-to-Speech toggling
   const toggleTextToSpeech = () => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
@@ -43,14 +44,17 @@ const Transcript = ({ newText }) => {
     }
   };
 
+  // Start Text-to-Speech and highlight words during playback
   const startTextToSpeech = () => {
-    if (!transcript) return;
+    if (!transcript.length) return;
 
-    const words = transcript.trim().split(' ');
+    const fullText = transcript.map(item => item.dialog).join(' ');
+    const words = fullText.split(' ');
+
     setTtsRange({ start: 0, end: words.length });
     setIsSpeaking(true);
 
-    utteranceRef.current = new SpeechSynthesisUtterance(transcript.trim());
+    utteranceRef.current = new SpeechSynthesisUtterance(fullText);
     utteranceRef.current.onboundary = (event) => {
       if (event.name === 'word') {
         const spokenWordIndex = words.findIndex(
@@ -71,25 +75,63 @@ const Transcript = ({ newText }) => {
   };
 
   const getHighlightedText = () => {
-    if (!transcript) return 'Transcript will appear here...';
-
-    return transcript.trim().split(' ').map((word, index) => (
-      <span
-        key={index}
-        style={{
-          backgroundColor: 
-            isSpeaking && index >= ttsRange.start && index < ttsRange.end
-              ? index === currentWordIndex
-                ? 'yellow'
-                : 'rgba(255, 255, 0, 0.3)'
-              : 'transparent',
-          transition: 'background-color 0.3s ease'
-        }}
-      >
-        {word}{' '}
-      </span>
-    ));
+    if (!transcript.length) return 'Transcript will appear here...';
+  
+    return transcript.map((chunk, chunkIndex) => {
+      const words = chunk.dialog.split(' ');
+  
+      return (
+        <span
+          key={`chunk-${chunkIndex}`}
+          style={{
+            display: 'inline-block',
+            backgroundColor: 'transparent',
+            transition: 'background-color 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            if (chunk.sentiment === 'NoConf') {
+              e.currentTarget.style.backgroundColor = '#ffcccc'; // Light red on hover
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (chunk.sentiment === 'NoConf') {
+              e.currentTarget.style.backgroundColor = 'transparent'; // Reset when hover ends
+            }
+          }}
+        >
+          {words.map((word, wordIndex) => {
+            const globalIndex = transcript
+              .slice(0, chunkIndex)
+              .reduce((acc, cur) => acc + cur.dialog.split(' ').length, 0) + wordIndex;
+  
+            return (
+              <Tooltip
+                key={`${chunkIndex}-${wordIndex}`}
+                title={chunk.sentiment === 'NoConf' ? `Confidence: ${chunk.confidence}` : ''}
+              >
+                <span
+                  style={{
+                    backgroundColor: 
+                      isSpeaking && globalIndex >= ttsRange.start && globalIndex < ttsRange.end
+                        ? globalIndex === currentWordIndex
+                          ? '#ffeb3b' // Dark yellow for current word
+                          : '#f5f5dc' // Beige for other spoken words
+                        : 'transparent',
+                    textDecoration: chunk.sentiment === 'NoConf' ? 'underline wavy red' : 'none',
+                    transition: 'background-color 0.3s ease'
+                  }}
+                >
+                  {word}{' '}
+                </span>
+              </Tooltip>
+            );
+          })}
+        </span>
+      );
+    });
   };
+  
+  
 
   return (
     <Box
@@ -113,7 +155,6 @@ const Transcript = ({ newText }) => {
       >
         <Box
           ref={transcriptRef}
-          onScroll={handleScroll}
           sx={{
             height: '100%',
             p: 3,
@@ -123,9 +164,9 @@ const Transcript = ({ newText }) => {
           <Typography
             variant="body1"
             sx={{
-              fontFamily: 'Roboto, sans-serif', // Change to your desired font
-              fontSize: '1rem', // Adjust font size as needed
-              color: '#333' // Adjust text color if needed
+              fontFamily: 'Roboto, sans-serif',
+              fontSize: '1rem',
+              color: '#333'
             }}
           >
             {getHighlightedText()}
@@ -143,7 +184,7 @@ const Transcript = ({ newText }) => {
       >
         <IconButton
           onClick={toggleTextToSpeech}
-          disabled={!transcript}
+          disabled={!transcript.length}
           sx={{
             backgroundColor: isSpeaking ? 'secondary.main' : 'primary.main',
             color: 'white',
