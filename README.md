@@ -1,5 +1,5 @@
 # Silent Voice
-
+Submission for the Hack the North 2024, by Sean Kwee & Nicholas Hioe
 # Technologies
 Frontend: React.js / Material-UI / JavaScript
 <br/>
